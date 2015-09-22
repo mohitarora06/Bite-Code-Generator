@@ -11,6 +11,7 @@ public static final int LEFT_PAREN= 8;
 public static final int RIGHT_PAREN= 9;   
 public static final int ID    = 10;   
 public static final int INT_LIT    = 11;
+public static final int END_LIT = 12;
   
 private static String[] lexemes = {   
     ";", ",", ".", "+", "-", "*", "/", "=", "(", ")", "ID", "NUMBER",

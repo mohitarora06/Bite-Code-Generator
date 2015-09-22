@@ -6,13 +6,47 @@ factor  -> int_lit | '(' expr ')'
 
 public class Parser {
 	public static void main(String[] args) {
-		System.out.println("Enter an expression, end with semi-colon!\n");
+		System.out.println("Enter a program which ends with Keyword \"end\"\n");
 		Lexer.lex();
-		new Expr();
+		new Program();
 		Code.output();
 	}
 }
+class Program {
+	Decls dec;
+	Stmts stmts;
+	public Program() {
+		dec = new Decls();
+		stmts = new Stmts();
+		if(Lexer.nextToken == Token.END_LIT) {
+			Code.gen("return");
+		}
+	}
+}
 
+class Decls {
+	IDlist idlist;
+	public Decls() {
+		if (Lexer.nextToken == Token.INT_LIT) {
+			Lexer.lex();
+			idlist = new IDlist();
+		}
+
+		
+	}
+}
+class IDlist {
+	public IDlist() {
+		
+		while(Lexer.nextToken != Token.SEMICOLON) {
+			Lexer.lex();
+		}
+		
+	}
+}
+class Stmts {
+	
+}
 class Expr   { // expr -> term (+ | -) expr | term
 	Term t;
 	Expr e;
