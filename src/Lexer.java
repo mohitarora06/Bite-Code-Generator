@@ -15,22 +15,22 @@ public class Lexer {
 		if (Character.isLetter(ch)) {
 			ident = Character.toLowerCase(ch);
 			ch = buffer.getChar();
-			if(ident == 'i' && ch == 'f'){
+			if (ident == 'i' && ch == 'f'){
 				ch = buffer.getChar();
 				nextToken = Token.IF;
 			}
-			else if(ident == 'f' && ch == 'o'){
+			else if (ident == 'f' && ch == 'o'){
 				ch = buffer.getChar();
 				ch = buffer.getChar();
 				nextToken = Token.FOR;
 			}
-			else if(ident == 'e' && ch == 'l'){
+			else if (ident == 'e' && ch == 'l'){
 				ch = buffer.getChar();
 				ch = buffer.getChar();
 				ch = buffer.getChar();
 				nextToken = Token.ELSE;
 			}
-			else{
+			else {
 				nextToken = Token.ID;
 			}
 		} else if (Character.isDigit(ch)) {
