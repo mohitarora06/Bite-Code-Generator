@@ -37,6 +37,9 @@ class IDlist {
 	public IDlist() {	
 		while(Lexer.nextToken != Token.SEMICOLON) {
 			Lexer.lex();
+			if(Lexer.nextToken == Token.ID){
+				Code.storeId(Lexer.id);
+			}
 		}
 	}
 }
@@ -154,6 +157,8 @@ class Factor { // factor -> number | '(' expr ')'
 class Code {
 	static String[] code = new String[100];
 	static int codeptr = 0;
+	static char[] ids = new char[27];
+	static int idpointer = 0;
 	
 	public static void gen(String s) {
 		code[codeptr] = s;
@@ -179,6 +184,11 @@ class Code {
 	public static void output() {
 		for (int i=0; i<codeptr; i++)
 			System.out.println(code[i]);
+	}
+	
+	public static void storeId(char c){
+		ids[idpointer] = c;
+		idpointer++;
 	}
 }
 

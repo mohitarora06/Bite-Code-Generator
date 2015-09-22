@@ -8,6 +8,7 @@ public class Lexer {
 	static public int nextToken;
 	static public char nextChar;
 	static public int intValue;
+	static public char id = ' ';
 
 	public static int lex() {
 		while (Character.isWhitespace(ch))
@@ -31,6 +32,7 @@ public class Lexer {
 				nextToken = Token.ELSE;
 			}
 			else {
+				id = ident;
 				nextToken = Token.ID;
 			}
 		} else if (Character.isDigit(ch)) {
