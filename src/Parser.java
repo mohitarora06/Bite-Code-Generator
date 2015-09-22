@@ -41,6 +41,59 @@ class IDlist {
 	}
 }
 class Stmts {
+	Stmt statement;
+	Stmts statements;
+	public Stmts() {
+		statement = new Stmt();
+		if (Lexer.nextToken != Token.END_LIT) {
+			statements = new Stmts();
+		}
+				
+	}
+	
+}
+
+class Stmt {
+	Assign assign;
+	Cmpd cmpd;
+	Cond cond;
+	Loop loop;
+	
+	public Stmt() {
+		switch (Lexer.nextToken){
+		case Token.ID  :
+			assign = new Assign();
+			break;
+		case Token.LBRACE :
+			cmpd = new Cmpd();
+			break;
+		case Token.IF :
+			cond = new Cond();
+            break;
+		case Token.FOR :
+			loop = new Loop();
+			break;
+		default :
+		
+		}
+	}
+	
+	
+}
+
+class Assign {
+
+}
+
+class Cmpd {
+	
+}
+
+class Cond {
+	
+}
+
+class Loop {
 	
 }
 class Expr   { // expr -> term (+ | -) expr | term
