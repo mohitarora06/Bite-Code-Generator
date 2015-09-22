@@ -15,7 +15,24 @@ public class Lexer {
 		if (Character.isLetter(ch)) {
 			ident = Character.toLowerCase(ch);
 			ch = buffer.getChar();
-			nextToken = Token.ID;
+			if(ident == 'i' && ch == 'f'){
+				ch = buffer.getChar();
+				nextToken = Token.IF;
+			}
+			else if(ident == 'f' && ch == 'o'){
+				ch = buffer.getChar();
+				ch = buffer.getChar();
+				nextToken = Token.FOR;
+			}
+			else if(ident == 'e' && ch == 'l'){
+				ch = buffer.getChar();
+				ch = buffer.getChar();
+				ch = buffer.getChar();
+				nextToken = Token.ELSE;
+			}
+			else{
+				nextToken = Token.ID;
+			}
 		} else if (Character.isDigit(ch)) {
 			nextToken = getNumToken(); // intValue would be set
 		} else {
@@ -47,6 +64,9 @@ public class Lexer {
 				break;
 			case ')':
 				nextToken = Token.RIGHT_PAREN;
+				break;
+			case '{':
+				nextToken = Token.LBRACE;
 				break;
 			default:
 				error("Illegal character " + ch);

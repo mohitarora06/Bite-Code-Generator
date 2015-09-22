@@ -31,17 +31,13 @@ class Decls {
 			Lexer.lex();
 			idlist = new IDlist();
 		}
-
-		
 	}
 }
 class IDlist {
-	public IDlist() {
-		
+	public IDlist() {	
 		while(Lexer.nextToken != Token.SEMICOLON) {
 			Lexer.lex();
 		}
-		
 	}
 }
 class Stmts {
