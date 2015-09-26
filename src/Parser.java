@@ -27,7 +27,7 @@ class Program {
 class Decls {
 	IDlist idlist;
 	public Decls() {
-		if (Lexer.nextToken == Token.INT_LIT) {
+		if (Lexer.nextToken == Token.INT) {
 			Lexer.lex();
 			idlist = new IDlist();
 		}
@@ -36,10 +36,10 @@ class Decls {
 class IDlist {
 	public IDlist() {	
 		while(Lexer.nextToken != Token.SEMICOLON) {
-			Lexer.lex();
 			if(Lexer.nextToken == Token.ID){
 				Code.storeId(Lexer.id);
 			}
+			Lexer.lex();
 		}
 	}
 }
