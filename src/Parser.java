@@ -19,7 +19,7 @@ class Program {
 		dec = new Decls();
 		stmts = new Stmts();
 		if(Lexer.nextToken == Token.END) {
-			Code.gen("return");
+			Code.gen(Code.lineNumber + ": return");
 		}
 	}
 }
@@ -173,6 +173,7 @@ class Code {
 	static int codeptr = 0;
 	static char[] ids = new char[27];
 	static int idpointer = 0;
+	static int lineNumber = 0;
 	
 	public static void gen(String s) {
 		code[codeptr] = s;
@@ -181,21 +182,28 @@ class Code {
 	
 	public static String store(int rhs) {
 		// TODO Auto-generated method stub
-		return "istore_" + rhs;
+		return (lineNumber++) + ": istore_" + rhs;
 	}
 
 	public static String intcode(int i) {
-		if (i > 127) return "sipush " + i;
-		if (i > 5) return "bipush " + i;
-		return "iconst_" + i;
+		int variable = lineNumber;
+		if (i > 127){
+			lineNumber = lineNumber + 3;
+			return variable +  ": sipush " + i;
+		}
+		if (i > 5){
+			lineNumber = lineNumber + 2;
+			return variable + ": bipush " + i;
+		}
+		return (lineNumber++) + ": iconst_" + i;
 	}
 	
 	public static String opcode(char op) {
 		switch(op) {
-		case '+' : return "iadd";
-		case '-':  return "isub";
-		case '*':  return "imul";
-		case '/':  return "idiv";
+		case '+' : return (lineNumber++) + "iadd";
+		case '-':  return (lineNumber++) + "isub";
+		case '*':  return (lineNumber++) + "imul";
+		case '/':  return (lineNumber++) + "idiv";
 		default: return "";
 		}
 	}
