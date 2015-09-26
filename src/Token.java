@@ -17,6 +17,7 @@ public static final int FOR = 14;
 public static final int LBRACE = 15;
 public static final int ELSE = 16;
 public static final int INT = 17;  
+
 private static String[] lexemes = {   
     ";", ",", ".", "+", "-", "*", "/", "=", "(", ")", "ID", "NUMBER",
     };   
