@@ -18,7 +18,7 @@ class Program {
 	public Program() {
 		dec = new Decls();
 		stmts = new Stmts();
-		if(Lexer.nextToken == Token.END_LIT) {
+		if(Lexer.nextToken == Token.END) {
 			Code.gen("return");
 		}
 	}
@@ -48,10 +48,9 @@ class Stmts {
 	Stmts statements;
 	public Stmts() {
 		statement = new Stmt();
-		if (Lexer.nextToken != Token.END_LIT) {
+		if (Lexer.nextToken != Token.END) {
 			statements = new Stmts();
-		}
-				
+		}		
 	}
 	
 }

@@ -31,6 +31,11 @@ public class Lexer {
 				ch = buffer.getChar();
 				nextToken = Token.ELSE;
 			}
+			else if (ident == 'e' && ch == 'n'){
+				ch = buffer.getChar();
+				ch = buffer.getChar();
+				nextToken = Token.END;
+			}
 			else {
 				id = ident;
 				nextToken = Token.ID;
