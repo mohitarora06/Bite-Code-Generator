@@ -76,7 +76,8 @@ class Stmt {
 			loop = new Loop();
 			break;
 		default :
-		
+            Lexer.lex();
+            break;
 		}
 	}
 	
@@ -84,6 +85,20 @@ class Stmt {
 }
 
 class Assign {
+	
+	Expr expr;
+	public Assign(){
+		if(Lexer.nextToken == Token.ID){
+			int rhs = Code.search(Lexer.id);
+			Lexer.lex();
+			if(Lexer.nextToken == Token.ASSIGN_OP){
+				Lexer.lex();
+				expr = new Expr();
+			}
+			Code.gen(Code.store(rhs));
+		}
+		
+	}
 
 }
 
@@ -164,6 +179,11 @@ class Code {
 		codeptr++;
 	}
 	
+	public static String store(int rhs) {
+		// TODO Auto-generated method stub
+		return "istore_" + rhs;
+	}
+
 	public static String intcode(int i) {
 		if (i > 127) return "sipush " + i;
 		if (i > 5) return "bipush " + i;
@@ -188,6 +208,15 @@ class Code {
 	public static void storeId(char c){
 		ids[idpointer] = c;
 		idpointer++;
+	}
+	
+	public static int search(char c){
+		for(int i=0;i<ids.length;i++){
+			if(ids[i] == c){
+				return i+1;
+			}
+		}
+		return -1;
 	}
 }
 
