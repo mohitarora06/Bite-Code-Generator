@@ -103,17 +103,25 @@ class Assign {
 }
 
 class Cmpd {
-	
+	Stmts statements;
+	public Cmpd () {
+		if (Lexer.nextToken == Token.LBRACE) {
+			statements = new Stmts();
+			Lexer.lex();
+			if (Lexer.nextToken == Token.RBRACE){
+				Lexer.lex();
+			}
+		}
+	}
 }
 
 class Cond {
-	
 }
 
 class Loop {
 	
 }
-class Expr   { // expr -> term (+ | -) expr | term
+class Expr   { // expr -> term (+ | -) expr | terms
 	Term t;
 	Expr e;
 	char op;
@@ -129,6 +137,30 @@ class Expr   { // expr -> term (+ | -) expr | term
 	}
 }
 
+class Rexpr {
+	Expr expr1;
+	Expr expr2;
+	public Rexpr() {
+		expr1 = new Expr();
+		Lexer.lex();
+		switch(Lexer.nextToken) {
+		   case Token.LESS_THAN:
+			   expr2 = new Expr();
+		       break;
+		   case Token.GREATER_THAN:
+			   expr2 = new Expr();
+		       break;
+		   case Token.EQUAL_TO :
+			   expr2 = new Expr();
+		       break;
+		   case Token.NOT_EQUAL_TO :
+			   expr2 = new Expr();
+		       break;
+		   default :
+			   break;
+		}
+	}
+}
 class Term    { // term -> factor (* | /) term | factor
 	Factor f;
 	Term t;
@@ -166,7 +198,6 @@ class Factor { // factor -> number | '(' expr ')'
 		}
 	}
 }
-
 
 class Code {
 	static String[] code = new String[100];

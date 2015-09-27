@@ -69,7 +69,10 @@ public class Lexer {
 				nextToken = Token.DIV_OP;
 				break;
 			case '=':
-				nextToken = Token.ASSIGN_OP;
+				ident = ch;
+				ch = buffer.getChar();
+				if(ch == '=') nextToken = Token.EQUAL_TO;
+				else nextToken = Token.ASSIGN_OP;
 				break;
 			case '(':
 				nextToken = Token.LEFT_PAREN;
@@ -79,6 +82,16 @@ public class Lexer {
 				break;
 			case '{':
 				nextToken = Token.LBRACE;
+				break;
+			case '<':
+				nextToken = Token.LESS_THAN;
+				break;
+			case '>':
+				nextToken = Token.GREATER_THAN;
+				break;
+			case '!':
+				ch = buffer.getChar();
+				nextToken = Token.NOT_EQUAL_TO;
 				break;
 			default:
 				error("Illegal character " + ch);
