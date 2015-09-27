@@ -83,6 +83,9 @@ public class Lexer {
 			case '{':
 				nextToken = Token.LBRACE;
 				break;
+			case '}':
+				nextToken = Token.RBRACE;
+				break;
 			case '<':
 				nextToken = Token.LESS_THAN;
 				break;

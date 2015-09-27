@@ -23,11 +23,11 @@ public static final int GREATER_THAN = 20;
 public static final int EQUAL_TO = 21;
 public static final int NOT_EQUAL_TO = 22;
 private static String[] lexemes = {   
-    ";", ",", ".", "+", "-", "*", "/", "=", "(", ")", "ID", "NUMBER",
+    ";", ",", ".", "+", "-", "*", "/", "=", "(", ")", "ID", "NUMBER","END","IF","FOR","{","ELSE","INT","}","<",">","==","!="
     };   
   
 public static String toString (int i) {   
-    if (i < 0 || i > INT_LIT)   
+    if (i < 0 || i > NOT_EQUAL_TO)   
        return "";   
     else return lexemes[i];   
 }

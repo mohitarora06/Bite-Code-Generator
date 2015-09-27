@@ -48,9 +48,12 @@ class Stmts {
 	Stmts statements;
 	public Stmts() {
 		statement = new Stmt();
-		if (Lexer.nextToken != Token.END) {
+		if (Lexer.nextToken == Token.END || Lexer.nextToken == Token.RBRACE) {
+			return;
+		}
+		else{
 			statements = new Stmts();
-		}		
+		}
 	}
 	
 }
@@ -94,6 +97,7 @@ class Assign {
 			if(Lexer.nextToken == Token.ASSIGN_OP){
 				Lexer.lex();
 				expr = new Expr();
+				Lexer.lex();
 			}
 			Code.gen(Code.store(rhs));
 		}
@@ -106,8 +110,8 @@ class Cmpd {
 	Stmts statements;
 	public Cmpd () {
 		if (Lexer.nextToken == Token.LBRACE) {
-			statements = new Stmts();
 			Lexer.lex();
+			statements = new Stmts();
 			if (Lexer.nextToken == Token.RBRACE){
 				Lexer.lex();
 			}
@@ -116,10 +120,69 @@ class Cmpd {
 }
 
 class Cond {
+	Rexpr rexpr;
+	Stmt stmt1;
+	Stmt stmt2;
+	public Cond(){
+		int elseCodePointer = 0;
+		String ifString = "";
+		if(Lexer.nextToken == Token.IF){
+			Lexer.lex();
+			if(Lexer.nextToken == Token.LEFT_PAREN){
+				Lexer.lex();
+				rexpr = new Rexpr();
+			}
+			int ifCodePointer = Code.codeptr++;
+			if(Lexer.nextToken == Token.RIGHT_PAREN){
+				Lexer.lex();
+			}
+			stmt1 = new Stmt();
+			if(Lexer.nextToken == Token.ELSE){
+				Lexer.lex();
+				elseCodePointer = Code.codeptr++;
+				int value = Code.lineNumber;
+				Code.lineNumber = Code.lineNumber + 3;
+				Code.code[ifCodePointer] = Code.code[ifCodePointer] + " " + Code.lineNumber;
+				stmt2 = new Stmt();
+				Code.code[elseCodePointer] = value + ": goto " + Code.lineNumber; 
+			}
+			else{
+			Code.code[ifCodePointer] = Code.code[ifCodePointer] + " " + Code.lineNumber;
+			}
+		}
+	}
 }
 
 class Loop {
-	
+	Assign assign1;
+	Assign assign2;
+	Rexpr rexpr;
+	Stmt stmt;
+	public Loop(){
+		Lexer.lex();
+		if(Lexer.nextToken == Token.LBRACE){
+			Lexer.lex();
+			if(Lexer.nextToken != Token.SEMICOLON){
+				assign1 = new Assign(); 
+			}
+			else{
+				Lexer.lex();
+				if(Lexer.nextToken != Token.SEMICOLON){
+					rexpr = new Rexpr();
+				}
+				else{
+					Lexer.lex();
+					if(Lexer.nextToken != Token.RBRACE){
+						assign2 = new Assign();
+					}
+					else{
+						Lexer.lex();
+					}
+				}
+			}
+		}
+		stmt = new Stmt();
+	}
 }
 class Expr   { // expr -> term (+ | -) expr | terms
 	Term t;
@@ -142,19 +205,35 @@ class Rexpr {
 	Expr expr2;
 	public Rexpr() {
 		expr1 = new Expr();
-		Lexer.lex();
+		int value = 0;
 		switch(Lexer.nextToken) {
 		   case Token.LESS_THAN:
+			   Lexer.lex();
 			   expr2 = new Expr();
+			   value = Code.lineNumber;
+			   Code.lineNumber = Code.lineNumber + 3;
+			   Code.code[Code.codeptr] = value + ": if_icmpge";
 		       break;
 		   case Token.GREATER_THAN:
+			   Lexer.lex();
 			   expr2 = new Expr();
+			   value = Code.lineNumber;
+			   Code.lineNumber = Code.lineNumber + 3;
+			   Code.code[Code.codeptr] = value + ": if_icmple";
 		       break;
 		   case Token.EQUAL_TO :
+			   Lexer.lex();
 			   expr2 = new Expr();
+			   value = Code.lineNumber;
+			   Code.lineNumber = Code.lineNumber + 3;
+			   Code.code[Code.codeptr] = value + ": if_icmpne";
 		       break;
 		   case Token.NOT_EQUAL_TO :
+			   Lexer.lex();
 			   expr2 = new Expr();
+			   value = Code.lineNumber;
+			   Code.lineNumber = Code.lineNumber + 3;
+			   Code.code[Code.codeptr] = value + ": if_icmpeq";
 		       break;
 		   default :
 			   break;
@@ -177,7 +256,7 @@ class Term    { // term -> factor (* | /) term | factor
 	}
 }
 
-class Factor { // factor -> number | '(' expr ')'
+class Factor { // factor -> number | id | '(' expr ')'
 	Expr e;
 	int i;
 
@@ -192,6 +271,11 @@ class Factor { // factor -> number | '(' expr ')'
 			Lexer.lex();
 			e = new Expr();
 			Lexer.lex(); // skip over ')'
+			break;
+		case Token.ID:
+			int a = Code.search(Lexer.id);
+			Code.gen(Code.load(a));
+			Lexer.lex();
 			break;
 		default:
 			break;
@@ -211,9 +295,30 @@ class Code {
 		codeptr++;
 	}
 	
+	public static String load(int a) {
+		// TODO Auto-generated method stub
+		int value = lineNumber;
+		if(a > 3){
+			lineNumber = lineNumber + 2 ;
+			return value + ": iload " + a;
+		}
+		else{
+			lineNumber = lineNumber + 1;
+			return value + ": iload_" + a;
+		}
+	}
+
 	public static String store(int rhs) {
 		// TODO Auto-generated method stub
-		return (lineNumber++) + ": istore_" + rhs;
+		int value = lineNumber;
+		if(rhs > 3){
+			lineNumber = lineNumber + 2 ;
+			return value + ": istore " + rhs;
+		}
+		else{
+			lineNumber = lineNumber + 1;
+			return value + ": istore_" + rhs;
+		}
 	}
 
 	public static String intcode(int i) {
@@ -231,10 +336,10 @@ class Code {
 	
 	public static String opcode(char op) {
 		switch(op) {
-		case '+' : return (lineNumber++) + "iadd";
-		case '-':  return (lineNumber++) + "isub";
-		case '*':  return (lineNumber++) + "imul";
-		case '/':  return (lineNumber++) + "idiv";
+		case '+' : return (lineNumber++) + ": iadd";
+		case '-':  return (lineNumber++) + ": isub";
+		case '*':  return (lineNumber++) + ": imul";
+		case '/':  return (lineNumber++) + ": idiv";
 		default: return "";
 		}
 	}
