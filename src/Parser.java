@@ -35,12 +35,19 @@ class Decls {
 }
 
 class IDlist {
-	public IDlist() {	
-		while(Lexer.nextToken != Token.SEMICOLON) {
-			if(Lexer.nextToken == Token.ID){
-				Code.storeId(Lexer.id);
-			}
+	IDlist idlist;
+	public IDlist() {
+		if(Lexer.nextToken == Token.ID){
+			Code.storeId(Lexer.id);
 			Lexer.lex();
+			if(Lexer.nextToken == Token.COMMA){
+				Lexer.lex();
+			}
+			else if(Lexer.nextToken == Token.SEMICOLON){
+				Lexer.lex();
+				return;
+			}
+			idlist = new IDlist();
 		}
 	}
 }
