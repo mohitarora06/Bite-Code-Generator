@@ -33,6 +33,7 @@ class Decls {
 		}
 	}
 }
+
 class IDlist {
 	public IDlist() {	
 		while(Lexer.nextToken != Token.SEMICOLON) {
@@ -43,6 +44,7 @@ class IDlist {
 		}
 	}
 }
+
 class Stmts {
 	Stmt statement;
 	Stmts statements;
@@ -55,7 +57,6 @@ class Stmts {
 			statements = new Stmts();
 		}
 	}
-	
 }
 
 class Stmt {
@@ -63,7 +64,6 @@ class Stmt {
 	Cmpd cmpd;
 	Cond cond;
 	Loop loop;
-	
 	public Stmt() {
 		switch (Lexer.nextToken){
 		case Token.ID  :
@@ -83,12 +83,9 @@ class Stmt {
             break;
 		}
 	}
-	
-	
 }
 
 class Assign {
-	
 	Expr expr;
 	public Assign(){
 		if(Lexer.nextToken == Token.ID){
@@ -99,11 +96,13 @@ class Assign {
 				expr = new Expr();
 				Lexer.lex();
 			}
+			else if(Lexer.nextToken == Token.INT_LIT || Lexer.nextToken == Token.ID){
+				expr = new Expr();
+				Lexer.lex();
+			}
 			Code.gen(Code.store(rhs));
-		}
-		
+		}	
 	}
-
 }
 
 class Cmpd {
@@ -160,30 +159,52 @@ class Loop {
 	Stmt stmt;
 	public Loop(){
 		Lexer.lex();
-		if(Lexer.nextToken == Token.LBRACE){
+		int forLineNumber = 0;
+		int ifCodePointer = 0;
+		if(Lexer.nextToken == Token.LEFT_PAREN){
 			Lexer.lex();
 			if(Lexer.nextToken != Token.SEMICOLON){
 				assign1 = new Assign(); 
 			}
 			else{
 				Lexer.lex();
-				if(Lexer.nextToken != Token.SEMICOLON){
-					rexpr = new Rexpr();
+			}
+			forLineNumber = Code.lineNumber;
+			if(Lexer.nextToken != Token.SEMICOLON){
+				rexpr = new Rexpr();
+			}
+			ifCodePointer = Code.codeptr++;
+			Lexer.lex();
+			int oldCodePointer = Code.codeptr;
+			int oldLineNumber = Code.lineNumber;
+			String a[] = new String[0];
+			if(Lexer.nextToken != Token.RIGHT_PAREN){
+				assign2 = new Assign();
+				int newCodePointer = Code.codeptr;
+				a = new String[newCodePointer - oldCodePointer];
+				for(int i = 0; i < a.length; i++){
+					a[i] = Code.code[oldCodePointer + i];
 				}
-				else{
-					Lexer.lex();
-					if(Lexer.nextToken != Token.RBRACE){
-						assign2 = new Assign();
-					}
-					else{
-						Lexer.lex();
-					}
-				}
+				Code.codeptr = oldCodePointer;
+				Code.lineNumber = oldLineNumber;
+				
+			}
+			else{
+				Lexer.lex();
+			}
+			stmt = new Stmt();
+			for(int i = 0; i < a.length; i++){
+				String split[] = a[i].split(":");
+				Code.code[Code.codeptr] = (Code.lineNumber++) + ":" + split[1];
+				Code.codeptr++;
 			}
 		}
-		stmt = new Stmt();
+		Code.gen(Code.lineNumber + ": goto " + forLineNumber);
+		Code.lineNumber = Code.lineNumber + 3;
+		Code.code[ifCodePointer] = Code.code[ifCodePointer] + " " + Code.lineNumber;
 	}
 }
+
 class Expr   { // expr -> term (+ | -) expr | terms
 	Term t;
 	Expr e;
@@ -240,6 +261,7 @@ class Rexpr {
 		}
 	}
 }
+
 class Term    { // term -> factor (* | /) term | factor
 	Factor f;
 	Term t;
@@ -259,7 +281,6 @@ class Term    { // term -> factor (* | /) term | factor
 class Factor { // factor -> number | id | '(' expr ')'
 	Expr e;
 	int i;
-
 	public Factor() {
 		switch (Lexer.nextToken) {
 		case Token.INT_LIT: // number

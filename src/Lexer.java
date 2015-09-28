@@ -71,8 +71,20 @@ public class Lexer {
 			case '=':
 				ident = ch;
 				ch = buffer.getChar();
-				if(ch == '=') nextToken = Token.EQUAL_TO;
-				else nextToken = Token.ASSIGN_OP;
+				if(ch == '='){
+					nextToken = Token.EQUAL_TO;
+				}
+				else if(Character.isDigit(ch)){
+					nextToken = getNumToken();
+					//nextToken = Token.ASSIGN_OP;
+				}
+				else if(ch == ' '){
+					nextToken = Token.ASSIGN_OP;
+				}
+				else{
+					id = ch;
+					nextToken = Token.ID;
+				}
 				break;
 			case '(':
 				nextToken = Token.LEFT_PAREN;
